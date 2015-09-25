@@ -45,6 +45,13 @@ end
 
 class Move
   VALUES = %w(rock paper scissors)
+  WINNING_VALUES = {
+    'rock' => %w(lizard scissors),
+    'paper' => %w(rock spock),
+    'scissors' => %w(lizard paper),
+    'spock' => %w(scissors rock),
+    'lizard' => %w(spock paper)
+  }
 
   def initialize(value)
     @value = value
@@ -89,6 +96,7 @@ class RPSGame
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors!"
+    puts "First person to 5 points wins the game!"
   end
 
   def display_goodbye_message
@@ -136,6 +144,23 @@ class RPSGame
     puts "#{computer.name}: #{computer.score} points"
   end
 
+  def winner?
+    human.score > 4 || computer.score > 4
+  end
+
+  def determine_final_winner
+    human.score > 4 ? :human : :computer
+  end
+
+  def display_final_winner
+    case determine_final_winner
+    when :human
+      puts "You won the game! Congratulations!"
+    when :computer
+      puts "Looks like the computer won the game. Better luck next time!"
+    end
+  end
+
   def play_again?
     answer = nil
     loop do
@@ -159,7 +184,11 @@ class RPSGame
       display_winner
       score_winner
       display_scores
+      break if winner?
       break unless play_again?
+    end
+    if winner?
+      display_final_winner
     end
     display_goodbye_message
   end
