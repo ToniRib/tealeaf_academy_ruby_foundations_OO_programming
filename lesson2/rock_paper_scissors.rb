@@ -1,9 +1,10 @@
 # rock_paper_scissors.rb
 
 class Player
-  attr_accessor :move, :name
+  attr_accessor :move, :name, :score
 
   def initialize
+    @score = 0
     set_name
   end
 end
@@ -100,19 +101,45 @@ class RPSGame
   end
 
   def display_winner
-    if human.move > computer.move
+    case determine_winner
+    when :human
       puts "#{human.name} won!"
-    elsif human.move < computer.move
+    when :computer
       puts "#{computer.name} won!"
-    else
+    when :tie
       puts "It's a tie!"
     end
+  end
+
+  def determine_winner
+    if human.move > computer.move
+      :human
+    elsif human.move < computer.move
+      :computer
+    else
+      :tie
+    end
+  end
+
+  def score_winner
+    case determine_winner
+    when :human
+      human.score += 1
+    when :computer
+      computer.score += 1
+    end
+  end
+
+  def display_scores
+    puts "\n-- Current Scores --"
+    puts "#{human.name}: #{human.score} points"
+    puts "#{computer.name}: #{computer.score} points"
   end
 
   def play_again?
     answer = nil
     loop do
-      puts "Would you like to play again? (y/n)"
+      puts "\nWould you like to play again? (y/n)"
       answer = gets.chomp
       break if ['y', 'n'].include? answer.downcase
       puts "Sorry, must be y or n."
@@ -130,6 +157,8 @@ class RPSGame
       computer.choose
       display_moves
       display_winner
+      score_winner
+      display_scores
       break unless play_again?
     end
     display_goodbye_message
