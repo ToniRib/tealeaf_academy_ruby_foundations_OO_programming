@@ -1,5 +1,7 @@
 # rock_paper_scissors.rb
 
+require 'pry'
+
 class Player
   attr_accessor :move, :name, :score
 
@@ -24,7 +26,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose rock, paper, or scissors:"
+      puts "Please choose rock, paper, scissors, lizard, or spock:"
       choice = gets.chomp
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
@@ -44,29 +46,26 @@ class Computer < Player
 end
 
 class Move
-  VALUES = %w(rock paper scissors)
-  WINNING_VALUES = {
-    'rock' => %w(lizard scissors),
-    'paper' => %w(rock spock),
-    'scissors' => %w(lizard paper),
-    'spock' => %w(scissors rock),
-    'lizard' => %w(spock paper)
-  }
+  VALUES = %w(rock paper scissors lizard spock)
 
   def initialize(value)
     @value = value
   end
 
   def >(other_move)
-    rock? && other_move.scissors? ||
-      paper? && other_move.rock? ||
-      scissors? && other_move.paper?
+    rock? && (other_move.lizard? || other_move.scissors?) ||
+      paper? && (other_move.rock? || other_move.spock?) ||
+      scissors? && (other_move.lizard? || other_move.paper?) ||
+      spock? && (other_move.scissors? || other_move.rock?) ||
+      lizard? && (other_move.spock? || other_move.paper?)
   end
 
   def <(other_move)
-    rock? && other_move.paper? ||
-      paper? && other_move.scissors? ||
-      scissors? && other_move.rock?
+    rock? && (other_move.paper? || other_move.spock?) ||
+      paper? && (other_move.lizard? || other_move.scissors?) ||
+      scissors? && (other_move.rock? || other_move.spock?) ||
+      spock? && (other_move.paper? || other_move.lizard?) ||
+      lizard? && (other_move.rock? || other_move.scissors?)
   end
 
   def scissors?
@@ -79,6 +78,14 @@ class Move
 
   def paper?
     @value == 'paper'
+  end
+
+  def spock?
+    @value == 'spock'
+  end
+
+  def lizard?
+    @value == 'lizard'
   end
 
   def to_s
@@ -95,12 +102,12 @@ class RPSGame
   end
 
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors!"
+    puts "Welcome to Rock, Paper, Scissors, Lizard, Spock!"
     puts "First person to 5 points wins the game!"
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors. Good bye!"
+    puts "Thanks for playing Rock, Paper, Scissors, Lizard, Spock. Good bye!"
   end
 
   def display_moves
@@ -187,9 +194,11 @@ class RPSGame
       break if winner?
       break unless play_again?
     end
+
     if winner?
       display_final_winner
     end
+
     display_goodbye_message
   end
 end
