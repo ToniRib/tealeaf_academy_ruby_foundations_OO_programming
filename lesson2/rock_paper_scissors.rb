@@ -93,6 +93,23 @@ class Move
   end
 end
 
+# TODO: left off here creating new classes
+class Rock < Move
+end
+
+class Paper < Move
+end
+
+class Scissors < Move
+end
+
+class Lizard < Move
+end
+
+class Spock < Move
+end
+# -- end of new classes
+
 class RPSGame
   attr_accessor :human, :computer
 
