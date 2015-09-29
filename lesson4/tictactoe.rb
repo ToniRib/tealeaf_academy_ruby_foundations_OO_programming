@@ -9,6 +9,10 @@ class Board
 
   def initialize
     @squares = {}
+    reset
+  end
+
+  def reset
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
@@ -57,7 +61,7 @@ class Square
 
   attr_accessor :marker
 
-  def initialize(marker=INITIAL_MARKER)
+  def initialize(marker = INITIAL_MARKER)
     @marker = marker
   end
 
@@ -91,30 +95,30 @@ class TTTGame
   end
 
   def display_welcome_message
-    puts "Welcome to Tic Tac Toe!"
-    puts ""
+    puts 'Welcome to Tic Tac Toe!'
+    puts ''
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Tic Tac Toe! Goodbye!"
+    puts 'Thanks for playing Tic Tac Toe! Goodbye!'
   end
 
-  def display_board
-    system 'clear'
+  def display_board(clear = true)
+    system 'clear' if clear
     puts "You're a #{human.marker}. Computer is a #{computer.marker}."
-    puts ""
-    puts "     |     |"
+    puts ''
+    puts '     |     |'
     puts "  #{board.get_square_at(1)}  |  #{board.get_square_at(2)}  |  #{board.get_square_at(3)}"
-    puts "     |     |"
-    puts "-----+-----+-----"
-    puts "     |     |"
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
     puts "  #{board.get_square_at(4)}  |  #{board.get_square_at(5)}  |  #{board.get_square_at(6)}"
-    puts "     |     |"
-    puts "-----+-----+-----"
-    puts "     |     |"
+    puts '     |     |'
+    puts '-----+-----+-----'
+    puts '     |     |'
     puts "  #{board.get_square_at(7)}  |  #{board.get_square_at(8)}  |  #{board.get_square_at(9)}"
-    puts "     |     |"
-    puts ""
+    puts '     |     |'
+    puts ''
   end
 
   def human_moves
@@ -137,26 +141,51 @@ class TTTGame
     display_board
     case board.detect_winner
     when human.marker
-      puts "You won!"
+      puts 'You won!'
     when computer.marker
-      puts "Computer won!"
+      puts 'Computer won!'
     else
       puts "It's a tie!"
     end
   end
 
+  def play_again?
+    answer = nil
+
+    loop do
+      puts 'Would you like to play again?'
+      answer = gets.chomp.downcase
+      break if %w(y n).include? answer
+      puts 'Sorry, must be y or n'
+    end
+
+    answer == 'y'
+  end
+
   def play
     display_welcome_message
-    display_board
-    loop do
-      human_moves
-      break if board.someone_won? || board.full?
 
-      computer_moves
-      break if board.someone_won? || board.full?
-      display_board
+    loop do
+      display_board(false)
+
+      loop do
+        human_moves
+        break if board.someone_won? || board.full?
+
+        computer_moves
+        break if board.someone_won? || board.full?
+
+        display_board
+      end
+
+      display_result
+      break unless play_again?
+      board.reset
+      system 'clear'
+      puts "Let's play again!"
+      puts ''
     end
-    display_result
+
     display_goodbye_message
   end
 end
