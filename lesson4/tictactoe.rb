@@ -89,9 +89,11 @@ end
 
 class Player
   attr_reader :marker
+  attr_accessor :score
 
   def initialize(marker)
     @marker = marker
+    @score = 0
   end
 end
 
@@ -121,10 +123,17 @@ class TTTGame
         clear_screen_and_display_board
       end
 
+      add_point_to_winner
       display_result
+      display_scores
+      break if final_winner?
       break unless play_again?
       reset
       display_play_again_message
+    end
+
+    if final_winner?
+      display_final_winner
     end
 
     display_goodbye_message
@@ -193,6 +202,32 @@ class TTTGame
       puts 'Computer won!'
     else
       puts "It's a tie!"
+    end
+  end
+
+  def display_scores
+    puts "Your score: #{human.score}, Computer score: #{computer.score}"
+  end
+
+  def add_point_to_winner
+    case board.winning_marker
+    when human.marker
+      human.score += 1
+    when computer.marker
+      computer.score += 1
+    end
+  end
+
+  def final_winner?
+    human.score > 4 || computer.score > 4
+  end
+
+  def display_final_winner
+    case board.winning_marker
+    when human.marker
+      puts 'You beat the computer! Congratulations!'
+    when computer.marker
+      puts 'Oh no! The computer beat you!'
     end
   end
 
