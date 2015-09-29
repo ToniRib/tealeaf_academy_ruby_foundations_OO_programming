@@ -103,8 +103,8 @@ class TTTGame
     puts 'Thanks for playing Tic Tac Toe! Goodbye!'
   end
 
-  def display_board(clear = true)
-    system 'clear' if clear
+  def display_board(clear_screen = true)
+    clear if clear_screen
     puts "You're a #{human.marker}. Computer is a #{computer.marker}."
     puts ''
     puts '     |     |'
@@ -162,6 +162,10 @@ class TTTGame
     answer == 'y'
   end
 
+  def clear
+    system 'clear'
+  end
+
   def play
     display_welcome_message
 
@@ -181,7 +185,7 @@ class TTTGame
       display_result
       break unless play_again?
       board.reset
-      system 'clear'
+      clear
       puts "Let's play again!"
       puts ''
     end
