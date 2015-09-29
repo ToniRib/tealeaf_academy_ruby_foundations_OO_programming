@@ -116,17 +116,15 @@ class Player
 end
 
 class TTTGame
-  HUMAN_MARKER = 'X'
   COMPUTER_MARKER = 'O'
-  FIRST_TO_MOVE = HUMAN_MARKER
 
   attr_reader :board, :human, :computer
 
   def initialize
     @board = Board.new
-    @human = Player.new(HUMAN_MARKER)
+    @human = Player.new(player_picks_marker)
     @computer = Player.new(COMPUTER_MARKER)
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = human.marker
   end
 
   def play
@@ -177,13 +175,24 @@ class TTTGame
     display_board
   end
 
+  def player_picks_marker
+    marker = nil
+    loop do
+      puts 'What would you like to use as a marker? (one character only)'
+      marker = gets.chomp
+      break if marker.length == 1
+      puts 'Please choose a marker that is one character only'
+    end
+    marker
+  end
+
   def current_player_moves
-    if @current_marker == HUMAN_MARKER
+    if @current_marker == human.marker
       human_moves
       @current_marker = COMPUTER_MARKER
     else
       computer_moves
-      @current_marker = HUMAN_MARKER
+      @current_marker = human.marker
     end
   end
 
