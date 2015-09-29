@@ -58,7 +58,7 @@ class Board
     nil
   end
 
-  def get_defensive_square
+  def find_best_square
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
       if two_identical_markers?(squares)
@@ -200,9 +200,11 @@ class TTTGame
   end
 
   def computer_moves
-    square = nil
+    square = board.find_best_square
 
-    square = board.get_defensive_square
+    if !square && board.unmarked_keys.include?(5)
+      square = 5
+    end
 
     if !square
       square = board.unmarked_keys.sample
