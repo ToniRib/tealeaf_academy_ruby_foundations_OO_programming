@@ -1,5 +1,7 @@
 # tictactoe.rb
 
+require 'pry'
+
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # rows
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # cols
@@ -56,11 +58,27 @@ class Board
     nil
   end
 
+  def get_defensive_square
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      if two_identical_markers?(squares)
+        return (line & unmarked_keys).first
+      end
+    end
+    nil
+  end
+
   private
 
   def three_identical_markers?(squares)
     markers = squares.select(&:marked?).collect(&:marker)
     return false if markers.size != 3
+    markers.uniq.size == 1
+  end
+
+  def two_identical_markers?(squares)
+    markers = squares.select(&:marked?).collect(&:marker)
+    return false if markers.size != 2
     markers.uniq.size == 1
   end
 end
@@ -132,10 +150,7 @@ class TTTGame
       display_play_again_message
     end
 
-    if final_winner?
-      display_final_winner
-    end
-
+    display_final_winner if final_winner?
     display_goodbye_message
   end
 
@@ -185,7 +200,15 @@ class TTTGame
   end
 
   def computer_moves
-    board[board.unmarked_keys.sample] = computer.marker
+    square = nil
+
+    square = board.get_defensive_square
+
+    if !square
+      square = board.unmarked_keys.sample
+    end
+
+    board[square] = computer.marker
   end
 
   def joinor(array, word, delimiter = ', ')
