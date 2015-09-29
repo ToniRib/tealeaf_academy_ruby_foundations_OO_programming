@@ -58,10 +58,10 @@ class Board
     nil
   end
 
-  def find_best_square
+  def find_best_square(marker)
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
-      if two_identical_markers?(squares)
+      if two_identical_markers?(squares, marker)
         return (line & unmarked_keys).first
       end
     end
@@ -76,10 +76,10 @@ class Board
     markers.uniq.size == 1
   end
 
-  def two_identical_markers?(squares)
+  def two_identical_markers?(squares, mark)
     markers = squares.select(&:marked?).collect(&:marker)
     return false if markers.size != 2
-    markers.uniq.size == 1
+    markers.uniq.size == 1 && markers.uniq.first == mark
   end
 end
 
@@ -209,7 +209,11 @@ class TTTGame
   end
 
   def computer_moves
-    square = board.find_best_square
+    square = board.find_best_square(computer.marker)
+
+    if !square
+      square = board.find_best_square(human.marker)
+    end
 
     if !square && board.unmarked_keys.include?(5)
       square = 5
@@ -284,7 +288,7 @@ class TTTGame
 
   def reset
     board.reset
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = human.marker
     clear
   end
 
