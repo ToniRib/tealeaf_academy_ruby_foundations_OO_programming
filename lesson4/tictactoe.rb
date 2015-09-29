@@ -106,10 +106,11 @@ class Square
 end
 
 class Player
-  attr_reader :marker
+  attr_reader :marker, :name
   attr_accessor :score
 
-  def initialize(marker)
+  def initialize(name, marker)
+    @name = name
     @marker = marker
     @score = 0
   end
@@ -117,13 +118,14 @@ end
 
 class TTTGame
   COMPUTER_MARKER = 'O'
+  COMPUTER_NAMES = %w(R2D2 Data Hal Astro)
 
   attr_reader :board, :human, :computer
 
   def initialize
     @board = Board.new
-    @human = Player.new(player_picks_marker)
-    @computer = Player.new(COMPUTER_MARKER)
+    @human = Player.new(player_chooses_name, player_picks_marker)
+    @computer = Player.new(COMPUTER_NAMES.sample, COMPUTER_MARKER)
     @current_marker = human.marker
   end
 
@@ -164,7 +166,7 @@ class TTTGame
   end
 
   def display_board
-    puts "You're a #{human.marker}. Computer is a #{computer.marker}."
+    puts "#{human.name} is a #{human.marker}. #{computer.name} is a #{computer.marker}."
     puts ''
     board.draw
     puts ''
@@ -184,6 +186,17 @@ class TTTGame
       puts 'Please choose a marker that is one character only'
     end
     marker
+  end
+
+  def player_chooses_name
+    name = nil
+    loop do
+      puts 'What is your name?'
+      name = gets.chomp
+      break if name.length > 0
+      puts 'Please enter a name to continue'
+    end
+    name
   end
 
   def current_player_moves
@@ -235,16 +248,16 @@ class TTTGame
     clear_screen_and_display_board
     case board.winning_marker
     when human.marker
-      puts 'You won!'
+      puts "#{human.name} won!"
     when computer.marker
-      puts 'Computer won!'
+      puts "#{computer.name} won!"
     else
       puts "It's a tie!"
     end
   end
 
   def display_scores
-    puts "Your score: #{human.score}, Computer score: #{computer.score}"
+    puts "#{human.name}'s score: #{human.score}, #{computer.name}'s score: #{computer.score}"
   end
 
   def add_point_to_winner
@@ -263,9 +276,9 @@ class TTTGame
   def display_final_winner
     case board.winning_marker
     when human.marker
-      puts 'You beat the computer! Congratulations!'
+      puts "You beat the #{computer.name}! Congratulations!"
     when computer.marker
-      puts 'Oh no! The computer beat you!'
+      puts "Oh no! #{computer.name} beat you!"
     end
   end
 
