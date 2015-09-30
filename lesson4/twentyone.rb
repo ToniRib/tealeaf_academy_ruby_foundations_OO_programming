@@ -1,6 +1,7 @@
 # twentyone.rb
 
 require 'pry'
+require 'pry-nav'
 
 class Participant
   attr_accessor :hand, :name
@@ -114,7 +115,8 @@ class Card
 end
 
 class Game
-  attr_reader :dealer, :player, :deck
+  attr_reader :dealer, :player
+  attr_accessor :deck
 
   def initialize
     @deck = Deck.new
@@ -147,6 +149,7 @@ class Game
 
   def player_turn
     puts "\n#{player.name}'s Turn:"
+    puts "---------------"
 
     loop do
       answer = nil
@@ -170,6 +173,24 @@ class Game
     end
   end
 
+  def dealer_turn
+    puts "\n#{dealer.name}'s Turn"
+    puts "---------------"
+    dealer.show_hand
+
+    loop do
+      if dealer.total >= 17  && !dealer.busted?
+        puts "#{dealer.name} chose to stay."
+        break
+      elsif dealer.busted?
+        break
+      else
+        dealer.hand << deck.deal_card
+        dealer.show_hand
+      end
+    end
+  end
+
   def show_busted
     if player.busted?
       puts "#{player.name} busted! That means #{dealer.name} wins!"
@@ -178,17 +199,73 @@ class Game
     end
   end
 
-  def start
-    display_welcome_message
-    deal_initial_cards
-    show_initial_cards
+  def play_again?
+    answer = nil
 
-    player_turn
-    if player.busted?
-      show_busted
+    loop do
+      puts 'Would you like to play again?'
+      answer = gets.chomp.downcase
+      break if %w(y n).include? answer
+      puts 'Sorry, must be y or n'
     end
-    # dealer_turn
-    # show_result
+
+    answer == 'y'
+  end
+
+  def reset
+    system 'clear'
+    puts "\nShuffling new deck..."
+    self.deck = Deck.new
+    player.hand = []
+    dealer.hand = []
+  end
+
+  def display_goodbye_message
+    puts 'Thank you for playing Twenty-One! Goodbye!'
+  end
+
+  def show_cards
+    player.show_hand
+    dealer.show_hand
+  end
+
+  def start
+    system 'clear'
+    display_welcome_message
+
+    loop do # main game loop
+      deal_initial_cards
+      show_initial_cards
+
+      player_turn
+      if player.busted?
+        show_busted
+        if play_again?
+          reset
+          next
+        else
+          break
+        end
+      end
+
+      dealer_turn
+      if dealer.busted?
+        show_busted
+        if play_again?
+          reset
+          next
+        else
+          break
+        end
+      end
+
+      show_cards
+      # show_result
+
+      play_again? ? reset : break
+    end
+
+    display_goodbye_message
   end
 end
 
