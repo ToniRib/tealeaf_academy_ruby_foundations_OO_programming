@@ -10,10 +10,6 @@ class Participant
     @hand = []
   end
 
-  def hit
-    hand << Deck.deal_card
-  end
-
   def busted?
     total > 21
   end
@@ -59,6 +55,7 @@ end
 
 class Dealer < Participant
   DEALER_NAMES = %w(Dan Nick Max Arjun Sonja Morgan)
+
   def set_name
     self.name = DEALER_NAMES.sample
   end
@@ -148,11 +145,48 @@ class Game
     dealer.show_hand
   end
 
+  def player_turn
+    puts "\n#{player.name}'s Turn:"
+
+    loop do
+      answer = nil
+      puts "\nWould you like to (h)it or (s)tay?"
+      loop do
+        answer = gets.chomp.downcase
+        break if %w(h s).include?(answer)
+        puts "Please enter either 'h' or 's'"
+      end
+
+      if answer == 's'
+        puts "#{player.name} chose to stay."
+        break
+      elsif player.busted?
+        break
+      else
+        player.hand << deck.deal_card
+        player.show_hand
+        break if player.busted?
+      end
+    end
+  end
+
+  def show_busted
+    if player.busted?
+      puts "#{player.name} busted! That means #{dealer.name} wins!"
+    elsif dealer.busted?
+      puts "#{dealer.name} busted! That means #{player.name} wins!"
+    end
+  end
+
   def start
     display_welcome_message
     deal_initial_cards
     show_initial_cards
-    # player_turn
+
+    player_turn
+    if player.busted?
+      show_busted
+    end
     # dealer_turn
     # show_result
   end
