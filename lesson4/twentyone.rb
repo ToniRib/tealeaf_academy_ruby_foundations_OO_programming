@@ -27,7 +27,7 @@ class Participant
       end
     end
 
-    hand.select(&:ace?).count.times do
+    hand.count(&:ace?).times do
       total -= 10 if total > 21
     end
 
@@ -36,7 +36,7 @@ class Participant
 
   def show_hand
     puts "#{name}'s Hand:"
-    hand.each { |card| puts "> #{card.to_s}" }
+    hand.each { |card| puts "> #{card}" }
     puts "Total: #{total}"
   end
 end
@@ -63,7 +63,7 @@ class Dealer < Participant
 
   def show_initial_hand
     puts "#{name}'s Hand:"
-    puts "> #{hand[0].to_s}"
+    puts "> #{hand[0]}"
     puts "> unknown card"
   end
 end
@@ -179,7 +179,7 @@ class Game
     dealer.show_hand
 
     loop do
-      if dealer.total >= 17  && !dealer.busted?
+      if dealer.total >= 17 && !dealer.busted?
         puts "#{dealer.name} chose to stay."
         break
       elsif dealer.busted?
