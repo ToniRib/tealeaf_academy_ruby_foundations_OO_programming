@@ -214,7 +214,7 @@ class Game
 
   def reset
     system 'clear'
-    puts "\nShuffling new deck..."
+    puts "Shuffling new deck..."
     self.deck = Deck.new
     player.hand = []
     dealer.hand = []
@@ -224,9 +224,32 @@ class Game
     puts 'Thank you for playing Twenty-One! Goodbye!'
   end
 
-  def show_cards
+  def show_both_hands
+    puts "\nFinal Cards"
+    puts "---------------"
     player.show_hand
     dealer.show_hand
+  end
+
+  def determine_winner
+    if player.total > dealer.total
+      :player
+    elsif dealer.total > player.total
+      :dealer
+    else
+      :tie
+    end
+  end
+
+  def display_result
+    case determine_winner
+    when :player
+      puts "#{player.name} beat #{dealer.name}!"
+    when :dealer
+      puts "#{dealer.name} beat #{player.name}!"
+    when :tie
+      puts "It's a tie!"
+    end
   end
 
   def start
@@ -259,8 +282,8 @@ class Game
         end
       end
 
-      show_cards
-      # show_result
+      show_both_hands
+      display_result
 
       play_again? ? reset : break
     end
